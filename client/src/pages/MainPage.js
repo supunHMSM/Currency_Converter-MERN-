@@ -6,15 +6,27 @@ function MainPage() {
   const [sourceCurrency, setSourceCurrency] = useState("");
   const [targetCurrency, setTargetCurrency] = useState("");
   const [amountInSourceCurrency, setAmountInSourceCurrency] = useState(0);
+  const [amountInTargetCurrency, setAmountInTargetCurrency] = useState(0);
   const [currencyNames, setCurrencyNames] = useState([]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log(
-      sourceCurrency
-  
-    );
+    
+    try {
+      const response = await axios.get("http://localhost:5000/convert" , {params:{
+        params: {
+          date,
+          sourceCurrency,
+          targetCurrency,
+          amountInSourceCurrency,
+        }
+      }});
+
+      setAmountInTargetCurrency(response.data);
+
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // Fetch currency names
@@ -128,6 +140,7 @@ function MainPage() {
           </form>
         </section>
       </div>
+      {amountInTargetCurrency}
     </div>
   );
 }
