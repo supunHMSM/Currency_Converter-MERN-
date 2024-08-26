@@ -1,21 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from 'axios';
 
 function MainPage() {
-  const [date, setDate] = useState(null);
+  const [date, setDate] = useState("");
   const [sourceCurrency, setSourceCurrency] = useState("");
   const [targetCurrency, setTargetCurrency] = useState("");
-  const [amountInSourceCurrency, setamountInSourceCurrency] = useState(0);
-  const [amountInTargetCurrency, setamountInTargetCurrency] = useState(0);
+  const [amountInSourceCurrency, setAmountInSourceCurrency] = useState(0);
+  const [currencyNames, setCurrencyNames] = useState([]);
 
-  const handleSubmit = (e)=> {
+  const handleSubmit = (e) => {
     e.preventDefault();
+    // Handle form submission here
     console.log(
-        date,
-        sourceCurrency,
-        targetCurrency,
-        amountInSourceCurrency
+      sourceCurrency
+  
     );
-  }
+  };
+
+  // Fetch currency names
+  useEffect(() => {
+    const getCurrencyNames = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/getAllCurrencies");
+        // Convert object to array of [code, name] pairs
+        const currencyArray = Object.entries(response.data.nameData);
+        setCurrencyNames(currencyArray);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    getCurrencyNames();
+  }, []);
 
   return (
     <div>
@@ -31,65 +47,76 @@ function MainPage() {
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label
-                htmlFor={date}
+                htmlFor="date"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >
                 Date
               </label>
               <input
-                onChange={(e)=>setDate(e.target.value)}
+                onChange={(e) => setDate(e.target.value)}
                 type="date"
-                id={date}
-                name={date}
+                id="date"
+                name="date"
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
                 required
               />
             </div>
             <div className="mb-4">
               <label
-                htmlFor={sourceCurrency}
+                htmlFor="sourceCurrency"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >
                 Source Currency
               </label>
               <select
                 onChange={(e) => setSourceCurrency(e.target.value)}
-                id={sourceCurrency}
-                name={sourceCurrency}
+                id="sourceCurrency"
+                name="sourceCurrency"
                 value={sourceCurrency}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
               >
                 <option value="">Select source currency</option>
+                {currencyNames.map(([currencyCode, currencyName]) => (
+                  <option key={currencyCode} value={currencyCode}>
+                    {currencyCode} - {currencyName}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="mb-4">
               <label
-                htmlFor={targetCurrency}
+                htmlFor="targetCurrency"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >
                 Target Currency
               </label>
               <select 
                 onChange={(e) => setTargetCurrency(e.target.value)}
-                name={targetCurrency}
-                id={targetCurrency}
+                id="targetCurrency"
+                name="targetCurrency"
                 value={targetCurrency}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500">
-                    <option value="">Select target currency</option>
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
+              >
+                <option value="">Select target currency</option>
+                {currencyNames.map(([currencyCode, currencyName]) => (
+                  <option key={currencyCode} value={currencyCode}>
+                    {currencyCode} - {currencyName}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="mb-4">
               <label
-                htmlFor={amountInSourceCurrency}
+                htmlFor="amountInSourceCurrency"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >
                 Amount in source currency
               </label>
               <input
-                onChange={(e) => setamountInSourceCurrency(e.target.value)}
-                type="text"
-                id={amountInSourceCurrency}
-                name={amountInSourceCurrency}
+                onChange={(e) => setAmountInSourceCurrency(e.target.value)}
+                type="number"
+                id="amountInSourceCurrency"
+                name="amountInSourceCurrency"
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
                 placeholder="Amount in source currency"
                 required
